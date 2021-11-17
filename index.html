@@ -7,6 +7,48 @@
   <title>Document</title>
 </head>
 <body>
-  
+  <section>
+    <div>
+      <h1 style="color: #3f5c9b;">page1</h1>
+      <p>마우스를 올려주세요</p>
+    </div>
+    <div>
+      <h1>page2</h1>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et, tenetur.</p>
+    </div>  
+  </section>
 </body>
+<style>
+  body{
+    background:#f3eee1;
+  }
+  section{
+    margin:50px auto;
+    position:relative;
+    width: 200px;height: 200px;
+    perspective: 1000px;
+  }
+  div{
+    position:absolute;
+    width: 200px; height: 250px;
+    text-align: center;
+    box-shadow: 5px 5px 15px #715f56;
+  }
+  div:nth-child(1){
+    background: white;
+    transform-origin: left center;
+    transition: 2s;
+    z-index:1;
+  }
+  div:nth-child(2){
+    background: #ead6bb;
+    trnasform-origin: left center;
+    transition: 2s;   
+    z-index;2;
+  }
+  div:nth-child(1):hover{
+    transform: rotateY(-180deg);
+    background: white;
+  }
+</style>
 </html>
