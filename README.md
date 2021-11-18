@@ -1,2 +1,1 @@
-# -1-yellowLight.github.iore
-page filp resource : https://codepen.io/tailofmoon/pen/JXmvea
+https://pks2974.medium.com/gatsby-%EB%A1%9C-blog-%EB%A7%8C%EB%93%A4%EA%B8%B0-ac3eed48e068
