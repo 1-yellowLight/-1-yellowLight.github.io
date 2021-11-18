@@ -4,51 +4,69 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-auth.js"></script>
+  <script src="./src/js/firebase.js"></script>
+
+  
+  <title>warmWhite</title>
 </head>
 <body>
-  <section>
-    <div>
-      <h1 style="color: #3f5c9b;">page1</h1>
-      <p>마우스를 올려주세요</p>
+  <div class="container_width">
+    <div class="container_height">
+      <div class="title">
+        <img src="./src/img/logo.png"/>
+        <p>warmWhite</p>
+      </div>
+      <main>
+        <p>asdf</p>
+        <p>qwer</p>
+        <button id="btn" value="asdf" onclick="writeUserData()">asdf</button>
+
+        <input id="strId" type="text"/>
+        <input id="strPw" type="text"/>
+        <button id="btn" value="createauth" onclick="createAuth()">createauth </button>
+
+      </main>
+      
     </div>
-    <div>
-      <h1>page2</h1>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et, tenetur.</p>
-    </div>  
-  </section>
+  </div>
 </body>
+
+
 <style>
   body{
     background:#f3eee1;
+    font-size: 14pt;
   }
-  section{
-    margin:50px auto;
-    position:relative;
-    width: 200px;height: 200px;
-    perspective: 1000px;
+  .container_width{
+    display: flex;
+    justify-content: center;
   }
-  div{
-    position:absolute;
-    width: 200px; height: 250px;
-    text-align: center;
-    box-shadow: 5px 5px 15px #715f56;
+  .container_height{
+    display: flex;
+    flex-direction: column;
   }
-  div:nth-child(1){
-    background: white;
-    transform-origin: left center;
-    transition: 2s;
-    z-index:1;
+  .title img{
+    display: inline-block;
+    height: auto;
+    width: 4rem;
   }
-  div:nth-child(2){
-    background: #ead6bb;
-    trnasform-origin: left center;
-    transition: 2s;   
-    z-index;2;
+  .title p{
+    font-family: 'NanumSquareRoundB';
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    font-size: 1rem;
+    margin: 0%;
+    left: -2.5rem;
+    top:-0.5rem;
   }
-  div:nth-child(1):hover{
-    transform: rotateY(-180deg);
-    background: white;
+  main p{
+    margin: 0%;
   }
 </style>
 </html>
