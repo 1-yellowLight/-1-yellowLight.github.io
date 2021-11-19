@@ -12,54 +12,69 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig); 
 firebase.analytics();
-var database = firebase.database();
+var db = firebase.firestore();
 
 // data write 
 function writeUserData() {
-  const rand_0_99 = Math.floor(Math.random() * 100);
-  firebase.database().ref('waiting_line/'+rand_0_99).set({
-      id: rand_0_99,
-      name: 'asdf'
+  db.collection("texts").add({
+    date: new Date().toLocaleString(),
+    title: "Mathison",
+    text: "Turing"
+  })
+  .then((docRef) => {
+      console.log("Document written with ID: ", docRef.id);
+  })
+  .catch((error) => {
+      console.error("Error adding document: ", error);
   });
 }
 
 function createAuth(){
-  const email=document.getElementById("strId").value;
-  const password=document.getElementById("strId").value;
-  alert(email);
+  let email=document.getElementById("strId").value;
+  let password=document.getElementById("strId").value;
+  const info=document.getElementById("info");
   firebase.auth().createUserWithEmailAndPassword(email, password)
   .then((userCredential) => {
-    // Signed in
     var user = userCredential.user;
-    alert(user);
-    // ...
+    info.style.display='block';
+    info.style.color='tomato';
+    info.innerHTML="Congratulations on joining! Sign in!";
   })
   .catch((error) => {
     var errorCode = error.code;
     var errorMessage = error.message;
-    // ..
+    info.style.display='block';
+    info.style.color='tomato';
+    info.innerHTML=errorCode+' : '+errorMessage;
   });
 }
 
 function loginAuth(){
-  const email=document.getElementById("strId").innerText;
-  const password=document.getElementById("strId").innerText;
-  firebase.auth().signInWithEmailAndPassword(email, password)
-  .then((userCredential) => {
-    // Signed in
-    var user = userCredential.user;
-    alert(user);
-    // ...
+  const email=document.getElementById("strId").value;
+  const password=document.getElementById("strId").value;
+  const info=document.getElementById("info");
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+  .then(() => {
+    firebase.auth().signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      var user = userCredential.user;
+      const strUid=JSON.stringify(user.uid).replace(/"/gi, ""); 
+      const strEmail=JSON.stringify(user.email).replace(/"/gi, ""); 
+      location.href="/index.html?uid="+strUid;
+    })
+    .catch((error) => {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      info.style.display='block';
+      info.style.color='tomato';
+      info.innerHTML=errorCode+' : '+errorMessage;
+    });
   })
   .catch((error) => {
     var errorCode = error.code;
     var errorMessage = error.message;
-  });
-}
-// data load
-window.onload=function (){
-  var starCountRef = database.ref('waiting_line/');
-  starCountRef.on('value', function(snapshot) {
-      alert(JSON.stringify(snapshot));
+    info.style.display='block';
+    info.style.color='tomato';
+    info.innerHTML=errorCode+' : '+errorMessage;
   });
 }

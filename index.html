@@ -4,13 +4,15 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-analytics.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-auth.js"></script>
   <script src="./src/js/firebase.js"></script>
-
+  <script src="./src/js/common.js"></script>
+  <link rel="shortcut icon" href="./src/img/favicon.ico" />
+  <link rel="stylesheet" type="text/css" href="./src/css/font.css">
+  <link rel="stylesheet" type="text/css" href="./src/css/common.css">  
   
   <title>warmWhite</title>
 </head>
@@ -21,52 +23,55 @@
         <img src="./src/img/logo.png"/>
         <p>warmWhite</p>
       </div>
-      <main>
-        <p>asdf</p>
-        <p>qwer</p>
-        <button id="btn" value="asdf" onclick="writeUserData()">asdf</button>
-
-        <input id="strId" type="text"/>
-        <input id="strPw" type="text"/>
-        <button id="btn" value="createauth" onclick="createAuth()">createauth </button>
-
+      <main class="fade" id="dataList">
       </main>
-      
     </div>
   </div>
 </body>
-
-
+<script>
+  const account=getSession();
+  const parmas=getUrlParams();
+  console.log(parmas.uid);
+  if(!account){
+    alert("로그인하세요");
+  }
+  // data load
+  window.onload=function (){
+    let dataList="";
+    db.collection(parmas.uid).get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+          tmpData=doc.data();
+          pageURL=location.protocol+"//"+location.host;
+          console.log(pageURL);
+          console.log(doc.id);
+          dataList+='<div class="listbox"><a href="'+pageURL+'/reader.html?uid='+parmas.uid+'&pageKey='+doc.id+'"><p>'+tmpData.title+'</p></a><p>'+tmpData.date+'</p></div>'
+      });
+      const dataListTag=document.getElementById('dataList');
+      dataListTag.innerHTML=dataList;
+    });
+  }
+</script>
 <style>
-  body{
-    background:#f3eee1;
-    font-size: 14pt;
+  main a{
+    color:black;
+    font-size: 1.5rem;
+    text-decoration: none;
+    font-family: "NotoSansKRMedium";
   }
-  .container_width{
+  main a:hover{
+    font-size: 2rem;
+  }
+  .listbox{
     display: flex;
-    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
   }
-  .container_height{
-    display: flex;
-    flex-direction: column;
+  .listbox a{
+    display: inline;
   }
-  .title img{
-    display: inline-block;
-    height: auto;
-    width: 4rem;
-  }
-  .title p{
-    font-family: 'NanumSquareRoundB';
-    display: inline-block;
-    position: relative;
-    vertical-align: middle;
-    font-size: 1rem;
-    margin: 0%;
-    left: -2.5rem;
-    top:-0.5rem;
-  }
-  main p{
-    margin: 0%;
+  .listbox p{
+    display: inline;
   }
 </style>
 </html>
