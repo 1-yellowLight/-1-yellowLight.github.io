@@ -33,10 +33,10 @@
 </body>
 <script>
   // data load
-  window.onload=function (){
+  window.onload=function(){
     const urlParams= getUrlParams();
     let dataList="";
-    db.collection(urlParams.uid).doc(urlParams.pageKey).get().then((doc) => {
+    db.collection("board").doc(urlParams.page).get().then((doc) => {
       if (doc.exists) {
         console.log("Document data:", doc.data());
         data=doc.data();

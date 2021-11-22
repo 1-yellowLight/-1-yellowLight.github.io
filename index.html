@@ -23,6 +23,13 @@
         <img src="./src/img/logo.png"/>
         <p>warmWhite</p>
       </div>
+      <div class="selection">
+        <a href="/">최신글</a>
+        <a id="writepage" href="/writer.html">글쓰기</a>
+        <a id="mypage" href="?state=mypage">나의글</a>
+        <a id="logoutBtn" onclick="logout()">로그아웃</a>
+        <a id="loginBtn" href="/login.html">로그인</a>
+      </div>
       <main class="fade" id="dataList">
       </main>
     </div>
@@ -31,24 +38,60 @@
 <script>
   const account=getSession();
   const parmas=getUrlParams();
-  console.log(parmas.uid);
-  // data load
+
   window.onload=function (){
     let dataList="";
-    db.collection(parmas.uid).get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-          tmpData=doc.data();
-          pageURL=location.protocol+"//"+location.host;
-          console.log(pageURL);
-          console.log(doc.id);
-          dataList+='<div class="listbox"><a href="'+pageURL+'/reader.html?uid='+parmas.uid+'&pageKey='+doc.id+'"><p>'+tmpData.title+'</p></a><p>'+tmpData.date+'</p></div>'
+    const logoutBtn=document.getElementById("logoutBtn");
+    const loginBtn=document.getElementById("loginBtn");
+    const mypage=document.getElementById("mypage");
+    const writepage=document.getElementById("writepage");
+    if(account){
+      logoutBtn.style.display="block";
+      mypage.style.display="block";
+      writepage.style.display="block";
+    }
+    else{
+      loginBtn.style.display="block";
+    }
+
+    if(parmas.state){//로그인성공
+      account.uid=account.uid.replace(/"/gi, "");
+      db.collection("board")
+      .where("uid","==",account.uid)
+      .orderBy("date")
+      .get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            tmpData=doc.data();
+            pageURL=location.protocol+"//"+location.host;
+            dataList='<div class="listbox"><a href="'+pageURL+'/reader.html?page='+doc.id+'"><p>'+tmpData.title+'</p></a><p>'+tmpData.date+'</p></div>'+dataList;
+        })
+        const dataListTag=document.getElementById('dataList');
+        dataListTag.innerHTML=dataList;
       });
-      const dataListTag=document.getElementById('dataList');
-      dataListTag.innerHTML=dataList;
-    });
+    }
+    else{
+      db.collection("list").orderBy("timestamp").get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            tmpData=doc.data();
+            console.log(tmpData);
+            pageURL=location.protocol+"//"+location.host;
+            dataList='<div class="listbox"><a href="'+pageURL+'/reader.html?page='+tmpData.key+'"><p>'+tmpData.title+'</p></a><p>'+tmpData.timestamp+'</p></div>'+dataList;
+        });
+        const dataListTag=document.getElementById('dataList');
+        dataListTag.innerHTML=dataList;
+      });
+    }
   }
 </script>
 <style>
+  #loginBtn, #logoutBtn, #mypage, #writepage{
+    display: none;
+  }
+  .selection{
+    display: flex;
+    justify-content: space-between;
+    margin: 0.5rem;
+  }
   main a{
     color:black;
     font-size: 1.5rem;

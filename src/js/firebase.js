@@ -16,16 +16,41 @@ var db = firebase.firestore();
 
 // data write 
 function writeUserData(uid,title,text) {
-  console.log(uid);
-  console.log(title);
-  console.log(text);
-  db.collection(uid).add({
-    date: new Date().toLocaleString(),
+  let strDate=new Date().toLocaleString();
+  db.collection("board").add({
+    date: strDate,
     title: title,
-    text: text
+    text: text,
+    uid:uid
   })
   .then((docRef) => {
-      console.log("Document written with ID: ", docRef.id);
+    writeList(uid,docRef.id,strDate,title);
+    console.log("Document written with ID: ", docRef.id);
+    location.href='/';
+  })
+  .catch((error) => {
+      console.error("Error adding document: ", error);
+  });
+}
+
+function writeUser(uid,strNickname) {
+  db.collection("users").doc(uid).set({
+    nickname:strNickname
+  })
+  .then((doc)=>{
+    location.href="/login.html";
+  })
+  .catch((error) => {
+      console.error("Error adding document: ", error);
+  });
+}
+
+function writeList(strUid,strKey,strTime,strTitle) {
+  db.collection("list").add({
+    key:strKey,
+    title:strTitle,
+    timestamp:strTime,
+    uid:strUid
   })
   .catch((error) => {
       console.error("Error adding document: ", error);
@@ -34,27 +59,36 @@ function writeUserData(uid,title,text) {
 
 function createAuth(){
   let email=document.getElementById("strId").value;
-  let password=document.getElementById("strId").value;
-  const info=document.getElementById("info");
-  firebase.auth().createUserWithEmailAndPassword(email, password)
-  .then((userCredential) => {
-    var user = userCredential.user;
-    info.style.display='block';
-    info.style.color='tomato';
-    info.innerHTML="Congratulations on joining! Sign in!";
-  })
-  .catch((error) => {
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    info.style.display='block';
-    info.style.color='tomato';
-    info.innerHTML=errorCode+' : '+errorMessage;
-  });
+  let nickname=document.getElementById("nickname").value;
+  let password1=document.getElementById("strPw1").value;
+  let password2=document.getElementById("strPw2").value;
+  if(password1==password2 && nickname !=""){
+    const info=document.getElementById("info");
+    firebase.auth().createUserWithEmailAndPassword(email, password1)
+    .then((userCredential) => {
+      var user = userCredential.user;
+      writeUser(user.uid,nickname);
+      info.style.display='block';
+      info.style.color='tomato';
+      info.innerHTML="Congratulations on joining! Sign in!";
+    })
+    .catch((error) => {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      info.style.display='block';
+      info.style.color='tomato';
+      info.innerHTML=errorCode+' : '+errorMessage;
+    });
+  }
+  else{
+    alert("비밀번호가 다릅니다.");
+  }
+  
 }
 
 function loginAuth(){
   const email=document.getElementById("strId").value;
-  const password=document.getElementById("strId").value;
+  const password=document.getElementById("strPw").value;
   const info=document.getElementById("info");
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
   .then(() => {
@@ -63,7 +97,7 @@ function loginAuth(){
       var user = userCredential.user;
       const strUid=JSON.stringify(user.uid).replace(/"/gi, ""); 
       const strEmail=JSON.stringify(user.email).replace(/"/gi, ""); 
-      location.href="/index.html?uid="+strUid;
+      location.href="/index.html";
     })
     .catch((error) => {
       var errorCode = error.code;
@@ -79,5 +113,25 @@ function loginAuth(){
     info.style.display='block';
     info.style.color='tomato';
     info.innerHTML=errorCode+' : '+errorMessage;
+  });
+}
+
+function getNickname(uid){
+  db.collection("users").doc(uid.replace(/"/gi, ""))
+  .get().then((docRef) => {
+    return docRef.data().nickname;
+  }).catch((error) => {
+    return false;
+  });
+}
+
+
+function logout(){
+  firebase.auth().signOut().then(function() {
+     window.location.href = "/";
+  }).catch(function(error) {
+    if(error){
+        alert("로그인 실패");
+    }
   });
 }
