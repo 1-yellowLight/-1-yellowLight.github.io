@@ -15,11 +15,14 @@ firebase.analytics();
 var db = firebase.firestore();
 
 // data write 
-function writeUserData() {
-  db.collection("texts").add({
+function writeUserData(uid,title,text) {
+  console.log(uid);
+  console.log(title);
+  console.log(text);
+  db.collection(uid).add({
     date: new Date().toLocaleString(),
-    title: "Mathison",
-    text: "Turing"
+    title: title,
+    text: text
   })
   .then((docRef) => {
       console.log("Document written with ID: ", docRef.id);
