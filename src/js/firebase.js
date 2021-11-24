@@ -43,6 +43,7 @@ function updateUserData(uid,title,text,chk,key) {
     chk:chk
   })
   .then((docRef) => {
+    writeList(uid,docRef.id,strDate,title);
     location.href='/';
   })
   .catch((error) => {
