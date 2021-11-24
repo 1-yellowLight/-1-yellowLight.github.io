@@ -37,14 +37,18 @@
         <form method="post">
           <textarea id="summernote" name="editordata"></textarea>
         </form>
-        <button class="save" onclick="save()" style="width: 100%; margin: 0%;margin-top: 1%;">저장</button>
+        <button class="save" onclick="save(1)" style="width: 100%; margin: 0%;margin-top: 1%;">발행</button>
+        <button class="save" onclick="save(0)" style="width: 100%; margin: 0%;margin-top: 1%;">저장</button>
       </main>
       
     </div>
   </div>
 </body>
 <script>
-  let account;
+  let account,update=0;
+  const titleEdt=document.getElementById("inputTxt");
+  const urlParams= getUrlParams();
+
   $(document).ready(function() {
     account=getSession();
     if(!account){
@@ -52,23 +56,53 @@
       location.href="/login.html"
     }
     $('#summernote').summernote({
-      height: 500,                
-      minHeight: 500,            
-      maxHeight: 500,             
-      focus: true,
-      toolbar: [
-        ['style', ['bold', 'italic', 'underline', 'clear']],
-        ['fontsize', ['fontsize']],
-        ['color', ['color']],
-        ['para', ['ul', 'ol', 'paragraph']]
-        ]        
+        height: 500,                
+        minHeight: 500,            
+        maxHeight: 500,             
+        focus: true,
+        toolbar: [
+          ['style', ['bold', 'italic', 'underline', 'clear']],
+          ['fontsize', ['fontsize']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']]
+          ]        
     });
+
+    if(urlParams.page){
+      update=1;
+      db.collection("board").doc(urlParams.page).get().then((doc) => {
+        if (doc.exists) {
+          data=doc.data();
+          account.uid=account.uid.replace(/"/gi, "");
+          if(data.uid==account.uid){
+            titleEdt.value=data.title;
+            titleEdt.readOnly=true;
+            const textEdt = $('#summernote').summernote('code',data.text);
+          }
+          else{
+            alert("권한이 없습니다.");
+          }
+        } else {
+            console.log("No such document!");
+        }
+        
+      }).catch((error) => {
+        console.log("Error getting document:", error);
+      });
+    }
+    else{
+      var textEdt = $('#summernote').summernote('code');
+    }
   });
 
-  var save = function() {
-  var textEdt = $('#summernote').summernote('code');
-  const titleEdt=document.getElementById("inputTxt");
-  writeUserData(account.uid.replace(/"/gi, ""),titleEdt.value,textEdt);
+  var save = function(chk) {
+    const textEdt = $('#summernote').summernote('code');
+    if(update==0){
+      writeUserData(account.uid.replace(/"/gi, ""),titleEdt.value,textEdt,chk);
+    }
+    else if(update==1){
+      updateUserData(account.uid.replace(/"/gi, ""),titleEdt.value,textEdt,chk,urlParams.page);
+    }
   };
 </script>
 

@@ -72,15 +72,19 @@
     else{
       db.collection("list").orderBy("timestamp").get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
+            let getData="";
             tmpData=doc.data();
-            console.log(tmpData);
             pageURL=location.protocol+"//"+location.host;
-            dataList='<div class="listbox"><a href="'+pageURL+'/reader.html?page='+tmpData.key+'"><p>'+tmpData.title+'</p></a><p>'+tmpData.timestamp+'</p></div>'+dataList;
+            dataList=setData(dataList,pageURL,tmpData.key,tmpData.title,tmpData.timestamp);
         });
         const dataListTag=document.getElementById('dataList');
         dataListTag.innerHTML=dataList;
       });
     }
+  }
+  function setData(oriData,strURL,strKey,strData,strTime){
+    oriData='<div class="listbox"><a href="'+strURL+'/reader.html?page='+strKey+'"><p>'+strData+'</p></a><p>'+strTime+'</p></div>'+oriData;
+    return oriData;
   }
 </script>
 <style>

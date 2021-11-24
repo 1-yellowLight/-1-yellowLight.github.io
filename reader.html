@@ -27,33 +27,47 @@
       
       <main class="fade" id="dataList">
       </main>
-      
+      <a id="edit" href="">수정하기</a>
+      <a id="" href="/">돌아가기</a>
+      <a id="delete">삭제하기</a>
     </div>
   </div>
 </body>
 <script>
   // data load
+  const urlParams= getUrlParams();
+  const editText=document.getElementById("edit");
+  const deleteText=document.getElementById("delete");
+  deleteText.addEventListener("click",function(){
+    removeData(urlParams.page);
+  });
   window.onload=function(){
-    const urlParams= getUrlParams();
-    let dataList="";
+    let dataList="",account;
+    account=getSession();
+    editText.href="./writer.html?page="+urlParams.page;
     db.collection("board").doc(urlParams.page).get().then((doc) => {
       if (doc.exists) {
-        console.log("Document data:", doc.data());
         data=doc.data();
+        if(data.chk==1 || account.uid.replace(/"/gi, "")==data.uid){
+          dataList+='<p>'+data.text+'</p>'
+          const dataListTag=document.getElementById('dataList');
+          const mainTitle=document.getElementById('mainTitle');
+          mainTitle.innerHTML=data.title;
+          dataListTag.innerHTML=dataList;
+        }
+        else{
+          alert("비공개글입니다.");
+          location.href='/';
+        }
       } else {
           console.log("No such document!");
       }
-      dataList+='<p>'+data.text+'</p>'
-      const dataListTag=document.getElementById('dataList');
-      const mainTitle=document.getElementById('mainTitle');
-      mainTitle.innerHTML=data.title;
-      dataListTag.innerHTML=dataList;
+      
     }).catch((error) => {
       console.log("Error getting document:", error);
     });
-    
   }
-
+  
 </script>
 
 <style>

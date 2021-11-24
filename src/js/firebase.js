@@ -14,18 +14,35 @@ firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 var db = firebase.firestore();
 
-// data write 
-function writeUserData(uid,title,text) {
+function writeUserData(uid,title,text,chk) {
   let strDate=new Date().toLocaleString();
   db.collection("board").add({
     date: strDate,
     title: title,
     text: text,
-    uid:uid
+    uid:uid,
+    chk:chk
   })
   .then((docRef) => {
     writeList(uid,docRef.id,strDate,title);
     console.log("Document written with ID: ", docRef.id);
+    location.href='/';
+  })
+  .catch((error) => {
+      console.error("Error adding document: ", error);
+  });
+}
+function updateUserData(uid,title,text,chk,key) {
+  console.log(uid+"/"+title+"/"+text+"/"+chk+"/"+key);
+  let strDate=new Date().toLocaleString();
+  db.collection("board").doc(key).set({
+    date: strDate,
+    title: title,
+    text: text,
+    uid:uid,
+    chk:chk
+  })
+  .then((docRef) => {
     location.href='/';
   })
   .catch((error) => {
@@ -122,6 +139,25 @@ function getNickname(uid){
     return docRef.data().nickname;
   }).catch((error) => {
     return false;
+  });
+}
+
+function removeData(key){
+  console.log()
+  db.collection("list").where("key","==",key).get().then((getQuery) => {
+    getQuery.forEach((doc) => {
+      db.collection("list").doc(doc.id).delete().then((deleteQuery) => {
+      }).catch((error) => {
+          console.error("Error removing document: ", error);
+      });
+    })
+  }).catch((error) => {
+      console.error("Error removing document: ", error);
+  });
+  db.collection("board").doc(key).delete().then(() => {
+    location.href="/";
+  }).catch((error) => {
+      console.error("Error removing document: ", error);
   });
 }
 
