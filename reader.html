@@ -44,18 +44,27 @@
   window.onload=function(){
     let dataList="",account;
     account=getSession();
+    console.log(account);
     editText.href="./writer.html?page="+urlParams.page;
     db.collection("board").doc(urlParams.page).get().then((doc) => {
+      const dataListTag=document.getElementById('dataList');
+      const mainTitle=document.getElementById('mainTitle');
       if (doc.exists) {
         data=doc.data();
-        if(data.chk==1 || account.uid.replace(/"/gi, "")==data.uid){
+        if(data.chk==1){
           dataList+='<p>'+data.text+'</p>'
-          const dataListTag=document.getElementById('dataList');
-          const mainTitle=document.getElementById('mainTitle');
           mainTitle.innerHTML=data.title;
           dataListTag.innerHTML=dataList;
         }
         else{
+          if(account)
+          {
+             if(account.uid.replace(/"/gi, "")==data.uid){
+              dataList+='<p>'+data.text+'</p>'
+              mainTitle.innerHTML=data.title;
+              dataListTag.innerHTML=dataList;
+             }
+          }
           alert("비공개글입니다.");
           location.href='/';
         }

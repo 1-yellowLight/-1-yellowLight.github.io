@@ -63,7 +63,7 @@
         querySnapshot.forEach((doc) => {
             tmpData=doc.data();
             pageURL=location.protocol+"//"+location.host;
-            dataList='<div class="listbox"><a href="'+pageURL+'/reader.html?page='+doc.id+'"><p>'+tmpData.title+'</p></a><p>'+tmpData.date+'</p></div>'+dataList;
+            dataList=setData(dataList,pageURL,tmpData.key,tmpData.title,tmpData.timestamp);
         })
         const dataListTag=document.getElementById('dataList');
         dataListTag.innerHTML=dataList;
