@@ -33,7 +33,7 @@
       </div>
       
       <main class="fade">
-        <input type="text" id="inputTxt"/>
+        <input type="text" id="inputTxt" maxlength='12' placeholder="12글자 제한"/>
         <form method="post">
           <textarea id="summernote" name="editordata"></textarea>
         </form>
@@ -81,6 +81,7 @@
           }
           else{
             alert("권한이 없습니다.");
+            location.href="/";
           }
         } else {
             console.log("No such document!");
