@@ -35,7 +35,7 @@ function writeUserData(uid,title,text,chk) {
 function updateUserData(uid,title,text,chk,key) {
   console.log(uid+"/"+title+"/"+text+"/"+chk+"/"+key);
   let strDate=new Date().toLocaleString();
-  db.collection("board").doc(key).set({
+  db.collection("board").doc(key).update({
     date: strDate,
     title: title,
     text: text,
@@ -43,7 +43,8 @@ function updateUserData(uid,title,text,chk,key) {
     chk:chk
   })
   .then((docRef) => {
-    writeList(uid,docRef.id,strDate,title);
+    //console.log(docRef.id);
+    //writeList(uid,docRef.id,strDate,title);
     location.href='/';
   })
   .catch((error) => {
@@ -88,6 +89,7 @@ function createAuth(){
       writeUser(user.uid,nickname);
       info.style.display='block';
       info.style.color='tomato';
+      userCredential.user.sendEmailVerification();
       info.innerHTML="Congratulations on joining! Sign in!";
     })
     .catch((error) => {
@@ -112,10 +114,18 @@ function loginAuth(){
   .then(() => {
     firebase.auth().signInWithEmailAndPassword(email, password)
     .then((userCredential) => {
-      var user = userCredential.user;
-      const strUid=JSON.stringify(user.uid).replace(/"/gi, ""); 
-      const strEmail=JSON.stringify(user.email).replace(/"/gi, ""); 
-      location.href="/index.html";
+      console.log(firebase.auth().currentUser.emailVerified);
+      if(firebase.auth().currentUser.emailVerified){
+        var user = userCredential.user;
+        const strUid=JSON.stringify(user.uid).replace(/"/gi, ""); 
+        const strEmail=JSON.stringify(user.email).replace(/"/gi, "");
+        location.href="/index.html";
+      }
+      else{
+        info.style.display='block';
+        info.style.color='tomato';
+        info.innerHTML='이메일을 확인하여 인증해주세요';
+      }
     })
     .catch((error) => {
       var errorCode = error.code;
@@ -139,6 +149,7 @@ function getNickname(uid){
   .get().then((docRef) => {
     return docRef.data().nickname;
   }).catch((error) => {
+    console.error("Error : ", error);
     return false;
   });
 }
@@ -149,7 +160,8 @@ function removeData(key){
     getQuery.forEach((doc) => {
       db.collection("list").doc(doc.id).delete().then((deleteQuery) => {
       }).catch((error) => {
-          console.error("Error removing document: ", error);
+          console.error("Error : ", error);
+          alert("권한이 없습니다.\n"+error);
       });
     })
   }).catch((error) => {
@@ -158,7 +170,8 @@ function removeData(key){
   db.collection("board").doc(key).delete().then(() => {
     location.href="/";
   }).catch((error) => {
-      console.error("Error removing document: ", error);
+      console.error("Error : ", error);
+      alert("권한이 없습니다.\n"+error);
   });
 }
 
