@@ -110,30 +110,32 @@ function loginAuth(){
   const email=document.getElementById("strId").value;
   const password=document.getElementById("strPw").value;
   const info=document.getElementById("info");
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
-  .then(() => {
-    firebase.auth().signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      console.log(firebase.auth().currentUser.emailVerified);
+  
+  firebase.auth().signInWithEmailAndPassword(email, password)
+  .then((userCredential) => {
+    
+    console.log(firebase.auth().currentUser.emailVerified);
       if(firebase.auth().currentUser.emailVerified){
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+        .then(() => {
         var user = userCredential.user;
         const strUid=JSON.stringify(user.uid).replace(/"/gi, ""); 
         const strEmail=JSON.stringify(user.email).replace(/"/gi, "");
         location.href="/index.html";
+        })
+        .catch((error) => {
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          info.style.display='block';
+          info.style.color='tomato';
+          info.innerHTML=errorCode+' : '+errorMessage;
+        });
       }
       else{
         info.style.display='block';
         info.style.color='tomato';
         info.innerHTML='이메일을 확인하여 인증해주세요';
       }
-    })
-    .catch((error) => {
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      info.style.display='block';
-      info.style.color='tomato';
-      info.innerHTML=errorCode+' : '+errorMessage;
-    });
   })
   .catch((error) => {
     var errorCode = error.code;
